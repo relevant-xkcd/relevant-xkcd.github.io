@@ -225,8 +225,10 @@
 
     search_and_display = function() {
         search = $("#search").val();
+        $("#loading").show();
 
         $.post(BACKEND + "/search", {"search": search}).done(function(data) {
+            $("#loading").hide();
             data = JSON.parse(data)
             
             $("#results").empty()
@@ -236,7 +238,9 @@
                 if(data.results.length == 0)
                     $("#no-results").show();
                 for(var i = 0; i < data.results.length; i++) {
-                    x = $('<a target="_blank" title="' + data.results[i].titletext + '" class="result-link" href="https://' + data.results[i].url + '"><div class="result"><div class="result-image"><img src="' + data.results[i].image + '" style="align-self: baseline;"></div><div class="result-header"><h1>' + data.results[i].title + '</h2></div></div></a>')
+                    var titletext = $("<div>").text(data.results[i].titletext).html().replace(/[\""]/g, '&quot;');
+                    var title = $("<div>").text(data.results[i].title).html().replace(/[\""]/g, '&quot;');
+                    x = $('<a target="_blank" title="' + titletext + '" class="result-link" href="https://' + data.results[i].url + '"><div class="result"><div class="result-image"><img src="' + data.results[i].image + '" style="align-self: baseline;"></div><div class="result-header"><h1>' + title + '</h2></div></div></a>')
                     $("#results").append(x)
                 }
             } else {
@@ -296,8 +300,11 @@
                         <div class="button" onclick="feeling_lucky();">I'm feeling lucky</div>
                     </div>
                 </div>
+                <div id="loading" style="display: none">
+                    Loading...
+                </div>
                 <div class="no-results" id="no-results" style="display: none">
-                    No results to show. Have you done the impossible? Have you somehow found a situation <i>without</i> a relevant XKCD?
+                    No results to show. Have you somehow found a situation <i>without</i> a relevant XKCD?
                 </div>
                 <div class="error" id="error">
                 </div>
